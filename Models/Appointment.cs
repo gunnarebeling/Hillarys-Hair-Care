@@ -12,5 +12,5 @@ public class Appointment
     public DateOnly Date {get; set;}
     public int TimeSlotId {get; set;}
     public TimeSlot TimeSlot {get; set;}
-    public List<Service> Services {get; set;}
+    public List<AppointmentService> AppointmentServices {get; set;}
 }

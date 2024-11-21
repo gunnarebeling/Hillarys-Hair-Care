@@ -8,6 +8,8 @@ public class HillarysHareCareDbContext : DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Service> Services { get; set; }
     public DbSet<Stylist> Stylists { get; set; }
+    public DbSet <TimeSlot> TimeSlots {get; set;}
+    public DbSet<AppointmentService> AppointmentServices {get; set;}
 
     public HillarysHareCareDbContext(DbContextOptions<HillarysHareCareDbContext> context) : base(context)
     {
@@ -16,6 +18,16 @@ public class HillarysHareCareDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AppointmentService>()
+            .HasOne(appser => appser.Appointment)
+            .WithMany(apser => apser.AppointmentServices)
+            .HasForeignKey(x => x.AppointmentId);
+        modelBuilder.Entity<AppointmentService>()
+            .HasOne(appser => appser.Service)
+            .WithMany(apser => apser.AppointmentServices)
+            .HasForeignKey(x => x.ServiceId);
+        
+        
         // seed data with campsite types
         modelBuilder.Entity<Customer>().HasData(new Customer[]
         {
@@ -124,6 +136,49 @@ public class HillarysHareCareDbContext : DbContext
             new TimeSlot { Id = 10, Time = "05:00 PM" },
             new TimeSlot { Id = 11, Time = "06:00 PM" }
         });
+        modelBuilder.Entity<Appointment>().HasData(new Appointment[]
+        {
+            new Appointment
+            {
+                Id = 1,
+                CustomerId = 1,
+                StylistId = 1,
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+                TimeSlotId = 4 // Tomorrow
+            },
+
+            new Appointment
+            {
+                Id = 2,
+                CustomerId = 2,
+                StylistId = 2,
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(2)), // Day after tomorrow
+                TimeSlotId = 2
+            }
+        });
+
+        modelBuilder.Entity<AppointmentService>().HasData(new AppointmentService[]
+        {
+            new AppointmentService
+            {
+                Id = 1,
+                AppointmentId = 1,
+                ServiceId = 2
+            },
+            new AppointmentService
+            {
+                Id = 2,
+                AppointmentId = 2,
+                ServiceId = 1
+            },
+            new AppointmentService
+            {
+                Id = 3,
+                AppointmentId = 2,
+                ServiceId = 4
+            }
+        });
+
         
     }
 }
