@@ -60,6 +60,31 @@ app.MapGet("/api/appointments", (HillarysHareCareDbContext Db) =>
     });
 });
 
+app.MapGet("/api/appointments/{id}", ( HillarysHareCareDbContext db ,int id) => 
+{
+    return db.Appointments.Select(a => new AppointmentDTO 
+    {
+        Id = a.Id,
+        Customer = new CustomerDTO{Id = a.Customer.Id, Name = a.Customer.Name},
+        CustomerId = a.CustomerId,
+        StylistId = a.StylistId,
+        Stylist = new StylistDTO 
+        {
+            Id = a.Stylist.Id, 
+            Name = a.Stylist.Name,
+            IsActive = a.Stylist.IsActive
+        },
+        Date = a.Date,
+        TimeSlotId = a.TimeSlotId,
+        TimeSlot = new TimeSlotDTO { Id = a.TimeSlot.Id, Time = a.TimeSlot.Time},
+        AppointmentServices = a.AppointmentServices.Select(aps => new AppointmentServiceDTO {
+            Service = new ServiceDTO {Id = aps.Service.Id, Type = aps.Service.Type, Cost = aps.Service.Cost}
+
+
+        }).ToList(),
+    }).Single(a => a.Id == id);
+});
+
 app.MapGet("/api/customers", (HillarysHareCareDbContext db) =>
 {
     return db.Customers.Select(c => new CustomerDTO
