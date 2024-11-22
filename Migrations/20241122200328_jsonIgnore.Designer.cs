@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HillarysHairCare.Migrations
 {
     [DbContext(typeof(HillarysHareCareDbContext))]
-    [Migration("20241121154417_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241122200328_jsonIgnore")]
+    partial class jsonIgnore
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,38 @@ namespace HillarysHairCare.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("AppointmentService", b =>
+                {
+                    b.Property<int>("AppointmentsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServicesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AppointmentsId", "ServicesId");
+
+                    b.HasIndex("ServicesId");
+
+                    b.ToTable("AppointmentService");
+
+                    b.HasData(
+                        new
+                        {
+                            AppointmentsId = 1,
+                            ServicesId = 1
+                        },
+                        new
+                        {
+                            AppointmentsId = 2,
+                            ServicesId = 2
+                        },
+                        new
+                        {
+                            AppointmentsId = 2,
+                            ServicesId = 1
+                        });
+                });
 
             modelBuilder.Entity("HillarysHareCare.Models.Appointment", b =>
                 {
@@ -59,7 +91,7 @@ namespace HillarysHairCare.Migrations
                         {
                             Id = 1,
                             CustomerId = 1,
-                            Date = new DateOnly(2024, 11, 22),
+                            Date = new DateOnly(2024, 11, 23),
                             StylistId = 1,
                             TimeSlotId = 4
                         },
@@ -67,52 +99,9 @@ namespace HillarysHairCare.Migrations
                         {
                             Id = 2,
                             CustomerId = 2,
-                            Date = new DateOnly(2024, 11, 23),
+                            Date = new DateOnly(2024, 11, 24),
                             StylistId = 2,
                             TimeSlotId = 2
-                        });
-                });
-
-            modelBuilder.Entity("HillarysHareCare.Models.AppointmentService", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("AppointmentServices");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AppointmentId = 1,
-                            ServiceId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AppointmentId = 2,
-                            ServiceId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AppointmentId = 2,
-                            ServiceId = 4
                         });
                 });
 
@@ -353,6 +342,21 @@ namespace HillarysHairCare.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AppointmentService", b =>
+                {
+                    b.HasOne("HillarysHareCare.Models.Appointment", null)
+                        .WithMany()
+                        .HasForeignKey("AppointmentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HillarysHareCare.Models.Service", null)
+                        .WithMany()
+                        .HasForeignKey("ServicesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HillarysHareCare.Models.Appointment", b =>
                 {
                     b.HasOne("HillarysHareCare.Models.Customer", "Customer")
@@ -380,38 +384,9 @@ namespace HillarysHairCare.Migrations
                     b.Navigation("TimeSlot");
                 });
 
-            modelBuilder.Entity("HillarysHareCare.Models.AppointmentService", b =>
-                {
-                    b.HasOne("HillarysHareCare.Models.Appointment", "Appointment")
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HillarysHareCare.Models.Service", "Service")
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("HillarysHareCare.Models.Appointment", b =>
-                {
-                    b.Navigation("AppointmentServices");
-                });
-
             modelBuilder.Entity("HillarysHareCare.Models.Customer", b =>
                 {
                     b.Navigation("Appointments");
-                });
-
-            modelBuilder.Entity("HillarysHareCare.Models.Service", b =>
-                {
-                    b.Navigation("AppointmentServices");
                 });
 
             modelBuilder.Entity("HillarysHareCare.Models.Stylist", b =>

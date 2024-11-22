@@ -107,26 +107,24 @@ namespace HillarysHairCare.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppointmentServices",
+                name: "AppointmentService",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AppointmentId = table.Column<int>(type: "integer", nullable: false),
-                    ServiceId = table.Column<int>(type: "integer", nullable: false)
+                    AppointmentsId = table.Column<int>(type: "integer", nullable: false),
+                    ServicesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppointmentServices", x => x.Id);
+                    table.PrimaryKey("PK_AppointmentService", x => new { x.AppointmentsId, x.ServicesId });
                     table.ForeignKey(
-                        name: "FK_AppointmentServices_Appointments_AppointmentId",
-                        column: x => x.AppointmentId,
+                        name: "FK_AppointmentService_Appointments_AppointmentsId",
+                        column: x => x.AppointmentsId,
                         principalTable: "Appointments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AppointmentServices_Services_ServiceId",
-                        column: x => x.ServiceId,
+                        name: "FK_AppointmentService_Services_ServicesId",
+                        column: x => x.ServicesId,
                         principalTable: "Services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -188,29 +186,24 @@ namespace HillarysHairCare.Migrations
                 columns: new[] { "Id", "CustomerId", "Date", "StylistId", "TimeSlotId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateOnly(2024, 11, 22), 1, 4 },
-                    { 2, 2, new DateOnly(2024, 11, 23), 2, 2 }
+                    { 1, 1, new DateOnly(2024, 11, 23), 1, 4 },
+                    { 2, 2, new DateOnly(2024, 11, 24), 2, 2 }
                 });
 
             migrationBuilder.InsertData(
-                table: "AppointmentServices",
-                columns: new[] { "Id", "AppointmentId", "ServiceId" },
+                table: "AppointmentService",
+                columns: new[] { "AppointmentsId", "ServicesId" },
                 values: new object[,]
                 {
-                    { 1, 1, 2 },
-                    { 2, 2, 1 },
-                    { 3, 2, 4 }
+                    { 1, 1 },
+                    { 2, 1 },
+                    { 2, 2 }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppointmentServices_AppointmentId",
-                table: "AppointmentServices",
-                column: "AppointmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppointmentServices_ServiceId",
-                table: "AppointmentServices",
-                column: "ServiceId");
+                name: "IX_AppointmentService_ServicesId",
+                table: "AppointmentService",
+                column: "ServicesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_CustomerId",
@@ -232,7 +225,7 @@ namespace HillarysHairCare.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AppointmentServices");
+                name: "AppointmentService");
 
             migrationBuilder.DropTable(
                 name: "Appointments");

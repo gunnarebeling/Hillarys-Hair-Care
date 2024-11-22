@@ -9,7 +9,7 @@ public class HillarysHareCareDbContext : DbContext
     public DbSet<Service> Services { get; set; }
     public DbSet<Stylist> Stylists { get; set; }
     public DbSet <TimeSlot> TimeSlots {get; set;}
-    public DbSet<AppointmentService> AppointmentServices {get; set;}
+
 
     public HillarysHareCareDbContext(DbContextOptions<HillarysHareCareDbContext> context) : base(context)
     {
@@ -18,14 +18,6 @@ public class HillarysHareCareDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AppointmentService>()
-            .HasOne(appser => appser.Appointment)
-            .WithMany(apser => apser.AppointmentServices)
-            .HasForeignKey(x => x.AppointmentId);
-        modelBuilder.Entity<AppointmentService>()
-            .HasOne(appser => appser.Service)
-            .WithMany(apser => apser.AppointmentServices)
-            .HasForeignKey(x => x.ServiceId);
         
         
         // seed data with campsite types
@@ -156,28 +148,15 @@ public class HillarysHareCareDbContext : DbContext
                 TimeSlotId = 2
             }
         });
+        modelBuilder.Entity<Appointment>()
+            .HasMany(a => a.Services)
+            .WithMany(s => s.Appointments)
+            .UsingEntity(j => j.HasData(
+                new { AppointmentsId = 1, ServicesId = 1 },
+                new { AppointmentsId = 2, ServicesId = 2 },
+                new { AppointmentsId = 2, ServicesId = 1 }
+            ));
 
-        modelBuilder.Entity<AppointmentService>().HasData(new AppointmentService[]
-        {
-            new AppointmentService
-            {
-                Id = 1,
-                AppointmentId = 1,
-                ServiceId = 2
-            },
-            new AppointmentService
-            {
-                Id = 2,
-                AppointmentId = 2,
-                ServiceId = 1
-            },
-            new AppointmentService
-            {
-                Id = 3,
-                AppointmentId = 2,
-                ServiceId = 4
-            }
-        });
 
         
     }

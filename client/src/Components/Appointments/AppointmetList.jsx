@@ -51,7 +51,7 @@ export const AppoointmentList = () => {
                                     <Link to={`${a.id}`} >details</Link>
                                 </td>
                                 <td>
-                                    <Link>edit/cancel</Link>
+                                    <Link to={`${a.id}/edit`} >edit/cancel</Link>
                                 </td>
                             </tr>
                         )
