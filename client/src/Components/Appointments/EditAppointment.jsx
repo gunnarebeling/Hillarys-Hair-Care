@@ -1,20 +1,19 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom"
+import { deleteAppointment, getAllAppointments, getAppointmentDetails } from "../../Services/appointmentServices";
+import { getAllServices } from "../../Services/serviceServices";
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
-import { getAllCustomers } from '../../Services/customerServices';
-import { getAllStylists } from '../../Services/stylistServices';
-import DatePicker from 'react-datepicker';
-import './Datestyle.css'
-import { getAllTimeSlots } from '../../Services/timeSlotServices';
-import { getAllAppointments, postAppointment } from '../../Services/appointmentServices';
-import { getAllServices } from '../../Services/serviceServices';
-import { useNavigate } from 'react-router-dom';
+import DatePicker from "react-datepicker";
+import { getAllCustomers } from "../../Services/customerServices";
+import { getAllStylists } from "../../Services/stylistServices";
+import { getAllTimeSlots } from "../../Services/timeSlotServices";
 
-
-export const CreateAppointment = () => {
+export const EditAppointment = () => {
+    const {appId} = useParams()
     const [allCustomers, setAllCustomers] = useState([])
     const [allStylists, setAllStylists] = useState([])
     const [allTimeSlots, setAllTimeSlots] = useState([])
+    const [appointment, setAppointment] = useState({})
     const [allAppointments, setAllAppointments] = useState([])
     const [allServices, setAllServices] = useState([])
     const [filteredTimeSlots, setFilteredTimeSlots] = useState([])
@@ -29,6 +28,7 @@ export const CreateAppointment = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
+        getAppointmentDetails(appId).then(res => setAppointment(res))
         getAllCustomers().then(res => setAllCustomers(res))
         getAllStylists().then(res => {
             const availableStylists = res.filter(s => s.isActive)
@@ -36,18 +36,33 @@ export const CreateAppointment = () => {
         getAllTimeSlots().then(res => setAllTimeSlots(res))
         getAllAppointments().then(res => setAllAppointments(res))
         getAllServices().then(res => setAllServices(res))
-    }, [])
 
+    }, [])
     useEffect(() => {
         let stylists = [...allStylists]
         let timeslots = [...allTimeSlots]
-        let formcopy = {...formData}
-        let services = allServices.map(s => ({id : s.id, status: false}))
-        formcopy.services = services
+       
         setFilteredStylists(stylists)
         setFilteredTimeSlots(timeslots)
-        setFormData(formcopy)
+       
     }, [allTimeSlots,allStylists])
+
+    useEffect(() => {
+        const appServices = allServices.map(s => {
+            if (appointment.services?.some(sa => sa.id === s.id )) {
+                return {id: s.id, status: true }
+            }else{
+                return {id:s.id, status: false}
+            }
+        } )
+        setFormData({
+            ...formData,
+        customerId: appointment.customerId,
+        stylistId: appointment.stylistId,
+        date: appointment.date,
+        timeSlot: appointment.timeSlotId,
+        services: appServices})
+    }, [appointment,allServices])
 
     useEffect(() => {
         let filterTime = [...allTimeSlots]
@@ -101,18 +116,25 @@ export const CreateAppointment = () => {
             return alert("please finish form")
         }else{
             formData.date = formData.date.toISOString().split('T')[0]
-            postAppointment(formData).then(
-                navigate('/appointments')
-            )
+           
+            
         }
         
     };
 
+    const handleDelete = (e) => {
+        e.preventDefault();
+        deleteAppointment(appId).then(
+            navigate('/appointments')
+        )
+
+    }
+    
     return (
         <Container className="my-5">
         <Row className="justify-content-center">
             <Col md={6}>
-            <h2>Create Appointment</h2>
+            <h2>Edit Appointment</h2>
             <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formCustomerId" className="mb-3">
                 <Form.Label>Choose Customer</Form.Label>
@@ -123,7 +145,7 @@ export const CreateAppointment = () => {
                     onChange={handleChange}
                     required
                 >
-                    <option value="#">Choose</option>
+                    
                     {allCustomers.map(c => <option key={`customer-${c.id}`} value={c.id}>{c.name}</option>)}
                 
                 </Form.Control>
@@ -192,10 +214,10 @@ export const CreateAppointment = () => {
                 <Button variant="primary" type="submit">
                 Submit
                 </Button>
+                <Button className="mx-2" variant="warning" onClick={handleDelete}>Delete</Button>
             </Form>
             </Col>
         </Row>
         </Container>
-    );
-    };
-
+    )
+}

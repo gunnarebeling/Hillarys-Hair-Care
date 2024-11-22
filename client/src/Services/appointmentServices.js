@@ -17,3 +17,9 @@ export const postAppointment = (applicationObj) => {
 export const getAppointmentDetails = (id) => {
     return fetch(`${api_Url}/${id}`).then(res => res.json())
 }
+
+export const deleteAppointment = (id) => {
+    return fetch(`${api_Url}/${id}`, {
+        method: 'DELETE'
+    })
+}

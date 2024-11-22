@@ -7,5 +7,5 @@ public class Service
     [Required]
     public string Type  {get; set;}
     public decimal Cost  {get; set;}
-    public List<AppointmentService> AppointmentServices { get; set; }
+    public List<Appointment> Appointments { get; set; } = new List<Appointment>();
 }

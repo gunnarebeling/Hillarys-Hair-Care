@@ -38,11 +38,11 @@ export const AppointmentDetails = () => {
             </div>
             <Table>
                 <tbody>
-                    {appointment.appointmentServices?.map(s => {
+                    {appointment.services?.map(s => {
                         return (
-                            <tr key={s.service?.id} className="d-flex">
-                                <td className="d-inline-block">{s.service?.type}</td>
-                                <td>${s.service?.cost}</td>
+                            <tr key={s.id} className="d-flex">
+                                <td className="d-inline-block">{s.type}</td>
+                                <td>${s.cost}</td>
                 
                             </tr>
                         )

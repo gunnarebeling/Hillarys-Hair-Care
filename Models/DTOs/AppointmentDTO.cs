@@ -11,7 +11,7 @@ public class AppointmentDTO
     public DateOnly Date {get; set;}
     public int TimeSlotId {get; set;}
     public TimeSlotDTO TimeSlot {get; set;}
-    public List<AppointmentServiceDTO> AppointmentServices {get; set;}
+    public List<ServiceDTO> Services {get; set;}
 
     protected decimal _tax = 1.0725m;
 
@@ -19,9 +19,9 @@ public class AppointmentDTO
     {
         get
         {
-           decimal total = AppointmentServices.Aggregate(0m, (total, ser) => 
+           decimal total = Services.Aggregate(0m, (total, ser) => 
            {
-                total += ser.Service.Cost;
+                total += ser.Cost;
                 return total;
            });
 

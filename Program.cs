@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using HillarysHareCare.Models.DTOs;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using System.Net.Security;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -52,11 +53,10 @@ app.MapGet("/api/appointments", (HillarysHareCareDbContext Db) =>
         Date = a.Date,
         TimeSlotId = a.TimeSlotId,
         TimeSlot = new TimeSlotDTO { Id = a.TimeSlot.Id, Time = a.TimeSlot.Time},
-        AppointmentServices = a.AppointmentServices.Select(aps => new AppointmentServiceDTO {
-            Service = new ServiceDTO {Id = aps.Service.Id, Type = aps.Service.Type, Cost = aps.Service.Cost}
+        Services = a.Services.Select(aps => new ServiceDTO {Id = aps.Id, Type = aps.Type, Cost = aps.Cost}).ToList()
+            
 
 
-        }).ToList(),
     });
 });
 
@@ -77,12 +77,28 @@ app.MapGet("/api/appointments/{id}", ( HillarysHareCareDbContext db ,int id) =>
         Date = a.Date,
         TimeSlotId = a.TimeSlotId,
         TimeSlot = new TimeSlotDTO { Id = a.TimeSlot.Id, Time = a.TimeSlot.Time},
-        AppointmentServices = a.AppointmentServices.Select(aps => new AppointmentServiceDTO {
-            Service = new ServiceDTO {Id = aps.Service.Id, Type = aps.Service.Type, Cost = aps.Service.Cost}
-
-
-        }).ToList(),
+        Services = a.Services.Select(aps => new ServiceDTO {Id = aps.Id, Type = aps.Type, Cost = aps.Cost}).ToList()
+            
     }).Single(a => a.Id == id);
+});
+
+app.MapDelete("/api/appointments/{id}", async (int id, HillarysHareCareDbContext db) => 
+{
+
+    try
+    {
+        Appointment appointment =  db.Appointments.SingleOrDefault(a => a.Id == id);
+        db.Appointments.Remove(appointment);
+        await db.SaveChangesAsync();
+        return Results.Accepted();
+       
+    }
+    catch (System.Exception ex)
+    {
+        
+        return Results.Problem($"An error occurred: {ex.Message}");
+    }
+
 });
 
 app.MapGet("/api/customers", (HillarysHareCareDbContext db) =>
@@ -133,39 +149,38 @@ app.MapGet("/api/services", (HillarysHareCareDbContext db) =>
 
 app.MapPost("/api/appointments", async (HillarysHareCareDbContext db, AppointmentPostDTO appointment) => 
 {
-    using var transaction = await db.Database.BeginTransactionAsync();
+   
     try
     {
+        var serviceIds = appointment.Services
+        .Where(a => a.Status) // Filter only services with Status true
+        .Select(a => a.Id)    // Select the Ids of those services
+        .ToList();
+
+        List<Service> services = await db.Services
+        .Where(s => serviceIds.Contains(s.Id)) // Only fetch services with valid Ids
+        .ToListAsync();
+
         
         Appointment realAppointment = new Appointment 
         {
             CustomerId = appointment.CustomerId,
             StylistId = appointment.StylistId,
             Date = DateOnly.Parse(appointment.Date),
-            TimeSlotId = appointment.TimeSlot
+            TimeSlotId = appointment.TimeSlot,
+            Services = services
         };
 
         db.Appointments.Add(realAppointment);
         await db.SaveChangesAsync();
-        List<AppointmentService> appointmentServices = appointment.Services.Where(s => s.Status == true).Select(s => new AppointmentService
-        {
-                AppointmentId = realAppointment.Id,
-                ServiceId = s.Id
-                
+        return Results.Created($"/api/appointments/{realAppointment.Id}", realAppointment);
+        
 
-        }).ToList();
-
-        db.AppointmentServices.AddRange(appointmentServices);
-
-        await db.SaveChangesAsync();
-        await transaction.CommitAsync();
-
-        return Results.Ok();
     }
     catch (System.Exception ex)
     {
         
-        await transaction.RollbackAsync();
+      
         return Results.Problem($"An error occurred: {ex.Message}");
     }
 
