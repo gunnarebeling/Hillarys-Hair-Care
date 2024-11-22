@@ -9,9 +9,10 @@ function App() {
     <>
       <Navbar color="info" expand="sm" className="" >
         <Nav className="w-100" navbar>
-          <NavbarBrand href="/">Hillarys Hair Care</NavbarBrand>
+          <NavbarBrand href="/appointments">Hillarys Hair Care</NavbarBrand>
           <NavItem className="d-flex">
-            <NavLink className="m-2" href="/">Appointments</NavLink>
+            <NavLink className="m-2" href="/appointments">Appointments</NavLink>
+            <NavLink className="m-2" href="/appointments/create">Create Appointment</NavLink>
             
           </NavItem>
         </Nav>
