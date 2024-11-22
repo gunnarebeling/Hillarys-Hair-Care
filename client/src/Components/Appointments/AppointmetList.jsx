@@ -48,7 +48,7 @@ export const AppoointmentList = () => {
                                 <td>{a.stylist.name}</td>
                                 <td>${a.totalCost}</td>
                                 <td>
-                                    <Link>details</Link>
+                                    <Link to={`${a.id}`} >details</Link>
                                 </td>
                                 <td>
                                     <Link>edit/cancel</Link>
