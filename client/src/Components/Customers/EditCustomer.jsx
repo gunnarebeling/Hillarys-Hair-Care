@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import InputMask from "react-text-mask";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
-import { postCustomer } from "../../Services/customerServices";
-export const CreateCustomer = () => {
+import { useNavigate, useParams } from "react-router-dom";
+import {  getCustomerById, postCustomer } from "../../Services/customerServices";
+export const EditCustomer = () => {
+    const {custId} = useParams()
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
     name: "",
@@ -12,6 +13,17 @@ export const CreateCustomer = () => {
     email: "",
     });
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        getCustomerById(custId).then( res => {
+            setFormData({
+                ...formData,
+                name: res.name,
+                phoneNumber: res.phoneNumber,
+                email: res.email
+            })
+        })
+    }, [])
 
 
     // Yup validation schema
@@ -59,7 +71,7 @@ export const CreateCustomer = () => {
     return (
     <div className="container">
         <div>
-        <h4>Create Customer</h4>
+        <h4>Edit Customer</h4>
         </div>
         <Form onSubmit={handleSubmit}>
         <Form.Group>

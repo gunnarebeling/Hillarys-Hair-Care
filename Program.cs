@@ -148,6 +148,17 @@ app.MapGet("/api/customers", (HillarysHareCareDbContext db) =>
     });
 });
 
+app.MapGet("/api/customers/{id}", (HillarysHareCareDbContext db, int id) =>
+{
+    return db.Customers.Select(c => new CustomerDTO
+    {
+        Id = c.Id,
+        Name = c.Name,
+        PhoneNumber = c.PhoneNumber,
+        Email = c.Email
+    }).Single(c => c.Id == id);
+});
+
 app.MapPost("/api/customers", (HillarysHareCareDbContext db, Customer custObj) => 
 {
     db.Customers.Add(custObj);
