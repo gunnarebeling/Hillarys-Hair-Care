@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react"
-import { getAllServices } from "../../Services/serviceServices"
-import { getAllStylists } from "../../Services/stylistServices"
+import { getAllStylists, updateStylist } from "../../Services/stylistServices"
 import { Table } from "react-bootstrap"
 import { Link } from "react-router-dom"
-import { Button } from "reactstrap"
+
 
 export const StylistList = () => {
     const [allStylists, setAllStylists] = useState([])
+    const [activate, setActivate] = useState(false)
 
 
 
     useEffect(() => {
         getAllStylists().then(res => setAllStylists(res))
-    }, [])
+    }, [activate])
 
     const handleActivate = (e) => {
-        
+        const id = e.target.dataset.id
+
+        updateStylist(id).then(() => setActivate(a => !a))
     }
     return (
         <div className="container">
             <div className="d-flex align-items-center">
                 <h3 className="m-2">Stylists</h3>
-                <Link to={"#"} >add Stylist</Link>
+                <Link to={"create"} >add Stylist</Link>
             </div>
             <Table>
                 <thead>
@@ -42,7 +44,7 @@ export const StylistList = () => {
                                 <td>{s.phoneNumber}</td>
                                 <td>{s.isActive ? "Active" : "Not Active"}</td>
                                 <td>
-                                    {s.isActive? (<button className="btn btn-warning">Deactivate</button>) : (<button className="btn btn-info" >Activate</button>) }
+                                    {s.isActive? (<button data-id={s.id} onClick={handleActivate} className="btn btn-warning">Deactivate</button>) : (<button  data-id={s.id}  onClick={handleActivate} className="btn btn-info" >Activate</button>) }
                                 </td>
                             </tr>
                         )
