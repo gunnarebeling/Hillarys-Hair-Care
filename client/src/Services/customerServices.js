@@ -12,3 +12,17 @@ export const postCustomer = (customerObj) => {
         body:(JSON.stringify(customerObj))
     })
 }
+
+export const getCustomerById = (id) => {
+    return fetch(`${api_Url}/${id}`).then(res => res.json())
+}
+
+export const updateCustomer = (id, customerObj) => {
+    return fetch(`${api_Url}/${id}`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body:(JSON.stringify(customerObj))
+    })
+}
