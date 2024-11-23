@@ -165,6 +165,15 @@ app.MapPost("/api/customers", (HillarysHareCareDbContext db, Customer custObj) =
     db.SaveChanges();
 });
 
+app.MapPut("/api/customers/{id}", (HillarysHareCareDbContext db, Customer custObj, int id) => 
+{
+    Customer customer = db.Customers.FirstOrDefault(c => c.Id == id);
+    customer.Name = custObj.Name;
+    customer.Email = custObj.Email;
+    customer.PhoneNumber = custObj.PhoneNumber;
+    db.SaveChanges();
+});
+
 // Stylists
 app.MapGet("/api/stylists", (HillarysHareCareDbContext db) =>
 {

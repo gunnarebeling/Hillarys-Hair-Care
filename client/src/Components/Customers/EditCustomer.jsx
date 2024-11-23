@@ -3,7 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import InputMask from "react-text-mask";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
-import {  getCustomerById, postCustomer } from "../../Services/customerServices";
+import {  getCustomerById, updateCustomer } from "../../Services/customerServices";
 export const EditCustomer = () => {
     const {custId} = useParams()
     const navigate = useNavigate()
@@ -54,8 +54,8 @@ export const EditCustomer = () => {
         setErrors({}); // Clear errors if validation passes
         console.log("Form submitted successfully:", formData);
         // Proceed with form submission logic (e.g., API call)
-        postCustomer(formData).then(()=> {
-            navigate("/appointments/create")
+        updateCustomer(custId, formData).then(()=> {
+            navigate('/customers')
         })
 
     } catch (validationErrors) {
