@@ -148,6 +148,12 @@ app.MapGet("/api/customers", (HillarysHareCareDbContext db) =>
     });
 });
 
+app.MapPost("/api/customers", (HillarysHareCareDbContext db, Customer custObj) => 
+{
+    db.Customers.Add(custObj);
+    db.SaveChanges();
+});
+
 // Stylists
 app.MapGet("/api/stylists", (HillarysHareCareDbContext db) =>
 {
@@ -176,7 +182,7 @@ app.MapPost("/api/stylists", (Stylist stylist, HillarysHareCareDbContext db) =>
     db.Stylists.Add(stylist);
     db.SaveChanges();
 
-    
+
 
 });
 

@@ -10,6 +10,7 @@ import { EditAppointment } from './Components/Appointments/EditAppointment.jsx'
 import { StylistList } from './Components/Stylists/StylistList.jsx'
 import { CreateStylist } from './Components/Stylists/CreateStylist.jsx'
 import { CustomerList } from './Components/Customers/CustomerList.jsx'
+import { CreateCustomer } from './Components/Customers/CreateCustomer.jsx'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')).render(
         </Route>
         <Route path='customers'>
           <Route index element={<CustomerList/>}/>
+          <Route path='create'  element={<CreateCustomer/>} />
         </Route>
       </Route>
     </Routes>
