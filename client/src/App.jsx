@@ -13,6 +13,7 @@ function App() {
           <NavItem className="d-flex">
             <NavLink className="m-2" href="/appointments">Appointments</NavLink>
             <NavLink className="m-2" href="/appointments/create">Create Appointment</NavLink>
+            <NavLink className="m-2" href="/stylists">Stylists</NavLink>
             
           </NavItem>
         </Nav>

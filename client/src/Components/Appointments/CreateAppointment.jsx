@@ -41,12 +41,10 @@ export const CreateAppointment = () => {
     useEffect(() => {
         let stylists = [...allStylists]
         let timeslots = [...allTimeSlots]
-        let formcopy = {...formData}
-        let services = allServices.map(s => ({id : s.id, status: false}))
-        formcopy.services = services
+       
         setFilteredStylists(stylists)
         setFilteredTimeSlots(timeslots)
-        setFormData(formcopy)
+       
     }, [allTimeSlots,allStylists])
 
     useEffect(() => {
