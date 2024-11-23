@@ -8,7 +8,7 @@ import './Datestyle.css'
 import { getAllTimeSlots } from '../../Services/timeSlotServices';
 import { getAllAppointments, postAppointment } from '../../Services/appointmentServices';
 import { getAllServices } from '../../Services/serviceServices';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from "yup";
 
 
@@ -147,7 +147,11 @@ export const CreateAppointment = () => {
             <h2>Create Appointment</h2>
             <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formCustomerId" className="mb-3">
-                <Form.Label>Choose Customer</Form.Label>
+                <Form.Label>
+                    <label htmlFor="">choose customer</label>
+                    <Link to={'/customers/create'}>new Customer</Link>
+
+                </Form.Label>
                 <Form.Control
                     as="select"
                     name="customerId"
