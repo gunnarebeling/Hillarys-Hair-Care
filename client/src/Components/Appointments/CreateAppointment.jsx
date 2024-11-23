@@ -9,6 +9,7 @@ import { getAllTimeSlots } from '../../Services/timeSlotServices';
 import { getAllAppointments, postAppointment } from '../../Services/appointmentServices';
 import { getAllServices } from '../../Services/serviceServices';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from "yup";
 
 
 export const CreateAppointment = () => {
@@ -26,7 +27,20 @@ export const CreateAppointment = () => {
         timeSlot: 0,
         services:[]
     });
+    const [ errors, setErrors] = useState({})
     const navigate = useNavigate()
+
+    const validationSchema = Yup.object().shape({
+        customerId : Yup.number().integer("Must be an Integer").notOneOf([0], "must choose a customer"),
+        stylistId: Yup.number().integer("Must be an Integer").notOneOf([0], "must choose a stylist"),
+        date: Yup.date("must choose a date").required("must choose a date"),
+        timeSlot : Yup.number().integer().notOneOf([0], "must choose a timeslot"),
+        services: Yup.array()
+        .min(1, "Must contain at least one service")
+        .test('at-least-one-true-status', 'At least one service must be selected', (services) => {
+        return services.some(service => service.status === true);
+    })
+    })
 
     useEffect(() => {
         getAllCustomers().then(res => setAllCustomers(res))
@@ -41,11 +55,20 @@ export const CreateAppointment = () => {
     useEffect(() => {
         let stylists = [...allStylists]
         let timeslots = [...allTimeSlots]
+        const serviceData = allServices.map(ser => {
+            return {id: ser.id, status: false}
+        })
+        const copy = {...formData,
+            services: serviceData
+        }
        
         setFilteredStylists(stylists)
         setFilteredTimeSlots(timeslots)
+        setFormData(copy)
+            
+        
        
-    }, [allTimeSlots,allStylists])
+    }, [allTimeSlots,allStylists,allServices])
 
     useEffect(() => {
         let filterTime = [...allTimeSlots]
@@ -93,16 +116,27 @@ export const CreateAppointment = () => {
     };
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (formData.customerId === 0 || formData.stylistId === 0 || formData.date === '' || formData.timeSlot === '' || formData.services.every(s => s.status === false) ) {
-            return alert("please finish form")
-        }else{
+        try {
+            await validationSchema.validate(formData, ({abortEarly : false}))
+            setErrors({})
             formData.date = formData.date.toISOString().split('T')[0]
             postAppointment(formData).then(
                 navigate('/appointments')
             )
+            
+        } catch (validationErrors) {
+            const formattedErrors = validationErrors.inner.reduce((acc, err) => {
+                acc[err.path] = err.message
+                return acc
+            }, {})
+
+            setErrors(formattedErrors)
         }
+        
+       
+       
         
     };
 
@@ -119,12 +153,14 @@ export const CreateAppointment = () => {
                     name="customerId"
                     value={formData.customerId}
                     onChange={handleChange}
-                    required
+                    isInvalid= {!!errors.customerId}
+                
                 >
                     <option value="#">Choose</option>
                     {allCustomers.map(c => <option key={`customer-${c.id}`} value={c.id}>{c.name}</option>)}
                 
                 </Form.Control>
+                <Form.Control.Feedback type='invalid'>{errors.customerId}</Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="formDate" className="mb-3">
@@ -136,10 +172,11 @@ export const CreateAppointment = () => {
                                 selected={formData.date}
                                 onChange={handleDateChange}
                                 dateFormat="yyyy-MM-dd" 
-                                className="form-control"
+                                className={`form-control ${errors.date ? "is-invalid" : ""}`}
                                 minDate={new Date()} 
-                                required
+                                
                             />
+                    <div className='invalid-feedback'>{errors.date}</div>
                 </Form.Group>
                 {/* Email */}
                 <Form.Group controlId="formSlotId" className="mb-3">
@@ -149,12 +186,14 @@ export const CreateAppointment = () => {
                     name="timeSlot"
                     value={formData.timeSlot}
                     onChange={handleChange}
-                    required
+                    isInvalid={!!errors.timeSlot}
+                    
                 >
                     <option value="#">Choose</option>
                     {filteredTimeSlots.map(s => <option key={`timeslot-${s.id}`} value={s.id}>{s.time}</option>)}
                 
                 </Form.Control>
+                <Form.Control.Feedback type='invalid'>{errors.timeSlot}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group controlId="formStylistId" className="mb-3">
                 <Form.Label>Choose Stylist</Form.Label>
@@ -163,12 +202,14 @@ export const CreateAppointment = () => {
                     name="stylistId"
                     value={formData.stylistId}
                     onChange={handleChange}
-                    required
+                    isInvalid={!!errors.stylistId}
+                   
                 >
                     <option value="#">Choose</option>
                     {filteredStylist.map(s => <option key={`stylist-${s.id}`} value={s.id}>{s.name}</option>)}
                 
                 </Form.Control>
+                <Form.Control.Feedback type='invalid'>{errors.stylistId}</Form.Control.Feedback>
                 </Form.Group>
             
             <Form.Group className="mb-3">
@@ -179,12 +220,17 @@ export const CreateAppointment = () => {
                         type="checkbox"
                         label={s.type}
                         name={s.id}
-                        checked={formData.services.find(fs => fs.id === s.id)?.status || ""}
+                        checked={formData.services.find(fs => fs.id === s.id)?.status || false}
                         onChange={handleChange}
                     />)
 
                 })}
-                
+                {errors.services && (
+                <div className="invalid-feedback d-block">
+                    {errors.services}
+                </div>
+    )}
+            
             </Form.Group>
 
                 <Button variant="primary" type="submit">

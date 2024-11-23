@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+// Appointments
 app.MapGet("/api/appointments", (HillarysHareCareDbContext Db) => 
 {
     return Db.Appointments.Select(a => new AppointmentDTO 
@@ -101,64 +101,18 @@ app.MapDelete("/api/appointments/{id}", async (int id, HillarysHareCareDbContext
 
 });
 
-app.MapGet("/api/customers", (HillarysHareCareDbContext db) =>
-{
-    return db.Customers.Select(c => new CustomerDTO
-    {
-        Id = c.Id,
-        Name = c.Name,
-        PhoneNumber = c.PhoneNumber,
-        Email = c.Email
-    });
-});
-
-app.MapGet("/api/stylists", (HillarysHareCareDbContext db) =>
-{
-    return db.Stylists.Select(s => new StylistDTO
-    {
-        Id = s.Id,
-        Name = s.Name,
-        PhoneNumber = s.PhoneNumber,
-        Email = s.Email,
-        IsActive = s.IsActive
-        
-    });
-});
-
-app.MapGet("/api/timeslots", (HillarysHareCareDbContext db) =>
-{
-    return db.TimeSlots.Select(t => new TimeSlotDTO
-    {
-        Id = t.Id,
-        Time = t.Time
-        
-    });
-});
-
-app.MapGet("/api/services", (HillarysHareCareDbContext db) => 
-{
-    return db.Services.Select(s => new ServiceDTO
-    {
-        Id = s.Id,
-        Type = s.Type,
-        Cost = s.Cost
-    });
-});
-
-
-
 app.MapPost("/api/appointments", async (HillarysHareCareDbContext db, AppointmentPostDTO appointment) => 
 {
    
     try
     {
         var serviceIds = appointment.Services
-        .Where(a => a.Status) // Filter only services with Status true
-        .Select(a => a.Id)    // Select the Ids of those services
+        .Where(a => a.Status) 
+        .Select(a => a.Id)  
         .ToList();
 
         List<Service> services = await db.Services
-        .Where(s => serviceIds.Contains(s.Id)) // Only fetch services with valid Ids
+        .Where(s => serviceIds.Contains(s.Id)) 
         .ToListAsync();
 
         
@@ -175,19 +129,79 @@ app.MapPost("/api/appointments", async (HillarysHareCareDbContext db, Appointmen
         await db.SaveChangesAsync();
         return Results.Created($"/api/appointments/{realAppointment.Id}", realAppointment);
         
-
     }
     catch (System.Exception ex)
-    {
-        
-      
+    {    
         return Results.Problem($"An error occurred: {ex.Message}");
-    }
+    } 
+});
 
-   
+//Customers
+app.MapGet("/api/customers", (HillarysHareCareDbContext db) =>
+{
+    return db.Customers.Select(c => new CustomerDTO
+    {
+        Id = c.Id,
+        Name = c.Name,
+        PhoneNumber = c.PhoneNumber,
+        Email = c.Email
+    });
+});
 
+// Stylists
+app.MapGet("/api/stylists", (HillarysHareCareDbContext db) =>
+{
+    return db.Stylists.Select(s => new StylistDTO
+    {
+        Id = s.Id,
+        Name = s.Name,
+        PhoneNumber = s.PhoneNumber,
+        Email = s.Email,
+        IsActive = s.IsActive
+        
+    });
+});
+
+app.MapPut("/api/stylists/{id}", (HillarysHareCareDbContext db, int id) => 
+{
+    Stylist stylist = db.Stylists.Single(s => s.Id == id);
+    stylist.IsActive = !stylist.IsActive;
+    db.SaveChanges();
+});
+
+app.MapPost("/api/stylists", (Stylist stylist, HillarysHareCareDbContext db) => 
+{
+    stylist.IsActive = true;
+
+    db.Stylists.Add(stylist);
+    db.SaveChanges();
 
     
+
 });
+
+// Timeslots
+app.MapGet("/api/timeslots", (HillarysHareCareDbContext db) =>
+{
+    return db.TimeSlots.Select(t => new TimeSlotDTO
+    {
+        Id = t.Id,
+        Time = t.Time
+        
+    });
+});
+//Services
+app.MapGet("/api/services", (HillarysHareCareDbContext db) => 
+{
+    return db.Services.Select(s => new ServiceDTO
+    {
+        Id = s.Id,
+        Type = s.Type,
+        Cost = s.Cost
+    });
+});
+
+
+
 app.Run();
 

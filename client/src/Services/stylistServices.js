@@ -9,3 +9,13 @@ export const updateStylist = (id) => {
         
     })
 }
+
+export const postStylist = (stylistObj) => {
+    return fetch(api_Url, {
+        method: 'POST',
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body:(JSON.stringify(stylistObj))
+    })
+}
