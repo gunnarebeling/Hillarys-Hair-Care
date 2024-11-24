@@ -88,7 +88,7 @@ namespace HillarysHairCare.Migrations
                         {
                             Id = 1,
                             CustomerId = 1,
-                            Date = new DateOnly(2024, 11, 23),
+                            Date = new DateOnly(2024, 11, 25),
                             StylistId = 1,
                             TimeSlotId = 4
                         },
@@ -96,7 +96,7 @@ namespace HillarysHairCare.Migrations
                         {
                             Id = 2,
                             CustomerId = 2,
-                            Date = new DateOnly(2024, 11, 24),
+                            Date = new DateOnly(2024, 11, 26),
                             StylistId = 2,
                             TimeSlotId = 2
                         });
