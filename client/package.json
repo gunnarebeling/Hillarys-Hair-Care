@@ -20,6 +20,7 @@
     "react-input-mask": "^2.0.4",
     "react-router-dom": "^6.28.0",
     "react-text-mask": "^5.5.0",
+    "reactstrap": "^9.2.3",
     "yup": "^1.4.0"
   },
   "devDependencies": {

@@ -186,8 +186,8 @@ namespace HillarysHairCare.Migrations
                 columns: new[] { "Id", "CustomerId", "Date", "StylistId", "TimeSlotId" },
                 values: new object[,]
                 {
-                    { 1, 1, new DateOnly(2024, 11, 23), 1, 4 },
-                    { 2, 2, new DateOnly(2024, 11, 24), 2, 2 }
+                    { 1, 1, new DateOnly(2024, 11, 25), 1, 4 },
+                    { 2, 2, new DateOnly(2024, 11, 26), 2, 2 }
                 });
 
             migrationBuilder.InsertData(

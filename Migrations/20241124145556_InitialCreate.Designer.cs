@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HillarysHairCare.Migrations
 {
     [DbContext(typeof(HillarysHareCareDbContext))]
-    [Migration("20241122200328_jsonIgnore")]
-    partial class jsonIgnore
+    [Migration("20241124145556_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,7 +91,7 @@ namespace HillarysHairCare.Migrations
                         {
                             Id = 1,
                             CustomerId = 1,
-                            Date = new DateOnly(2024, 11, 23),
+                            Date = new DateOnly(2024, 11, 25),
                             StylistId = 1,
                             TimeSlotId = 4
                         },
@@ -99,7 +99,7 @@ namespace HillarysHairCare.Migrations
                         {
                             Id = 2,
                             CustomerId = 2,
-                            Date = new DateOnly(2024, 11, 24),
+                            Date = new DateOnly(2024, 11, 26),
                             StylistId = 2,
                             TimeSlotId = 2
                         });

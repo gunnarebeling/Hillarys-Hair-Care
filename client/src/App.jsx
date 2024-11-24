@@ -15,6 +15,7 @@ function App() {
             <NavLink className="m-2" href="/appointments/create">Create Appointment</NavLink>
             <NavLink className="m-2" href="/stylists">Stylists</NavLink>
             <NavLink className="m-2" href="/customers">Customer</NavLink>
+            <NavLink className="m-2" href="/services">Services</NavLink>
             
           </NavItem>
         </Nav>
